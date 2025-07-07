@@ -15,9 +15,8 @@ Nhập mật khẩu để điều khiển máy in, thông thường mật khẩu
 Username: mks
 Password: makerbase
 
-```scss
-![Đăng nhập thành công](login.png)
-```
+![Đăng nhập thành công](images/login.png)
+
 
 ---
 
@@ -166,9 +165,8 @@ sudo systemctl status mjpg_streamer
 
 thành công thì nó sẽ báo như sau:
 
-```md
-![Kết nối thành công](success.png)
-```
+![Kết nối thành công](images/success.png)
+
 
 ---
 

@@ -224,9 +224,10 @@ Sửa trong service:
 
 > Sau khi cấu hình, bạn có thể xem trực tiếp webcam trong phần giao diện in ấn.
 
+![Và đây là thành quả](images/ok.png)
 📌 **Mẹo thêm từ video:**
 
-* Nếu camera bị đứng hình hoặc chậm, hãy giảm FPS xuống (ví dụ: 10 FPS).
+* Nếu camera bị đứng hình hoặc chậm, hãy giảm FPS xuống (ví dụ: 10 FPS). Hoặc trong setting của app chọn "MJPEG Stream" để hình ảnh mượt hơn do được stream trực tiếp
 * Độ phân giải phù hợp thường là 640x480 để giảm tải cho board SBC yếu (như máy cũ).
 * Bạn có thể chạy `htop` để kiểm tra mức sử dụng CPU trong khi phát stream.
 

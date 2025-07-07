@@ -121,7 +121,7 @@ Nếu không có, bạn cần build lại đúng thư mục `mjpg-streamer-exper
 
 ---
 
-#### 5. Tạo systemd service
+#### 5. Tạo systemd service (do ghi chạy 1 lúc nó bị crash nên cần tạo service để tự khởi động khi bị crash)
 
 ```bash
 sudo nano /etc/systemd/system/mjpg_streamer.service

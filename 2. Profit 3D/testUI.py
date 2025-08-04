@@ -1,6 +1,9 @@
-import tkinter as tk
-from tkinter import ttk, messagebox
+import customtkinter as ctk
 import json
+from tkinter import messagebox
+
+ctk.set_appearance_mode("system")  # "light", "dark", "system"
+ctk.set_default_color_theme("blue")  # Có thể dùng "green", "dark-blue", v.v.
 
 def tinh_tien_in():
     try:
@@ -13,7 +16,6 @@ def tinh_tien_in():
         messagebox.showerror("Lỗi nhập liệu", "Vui lòng nhập đúng định dạng số.")
         return
 
-    # === Đọc cấu hình từ file JSON ===
     try:
         with open("config.json", "r", encoding="utf-8") as f:
             config = json.load(f)
@@ -31,15 +33,12 @@ def tinh_tien_in():
     gia_nhua_raw = config.get("gia_nhua", {})
     gia_dien = config.get("gia_dien", {})
 
-    # Chuyển giá nhựa từ VND/kg sang VND/g
     gia_nhua = {k: v / 1000 for k, v in gia_nhua_raw.items()}
 
-    # Kiểm tra loại nhựa có tồn tại không
     if loai_nhua not in gia_nhua:
         messagebox.showerror("Lỗi", f"Không tìm thấy giá cho loại nhựa '{loai_nhua}' trong config.")
         return
 
-    # === Tính tiền điện theo bậc ===
     def tinh_tien_dien(kwh):
         bac1 = gia_dien.get("bac1", 1984)
         bac2 = gia_dien.get("bac2", 2050)
@@ -78,41 +77,41 @@ Tiền công: {round(tien_cong):,} VNĐ
 ----------------------------
 Tổng chi phí: {round(tong_chi_phi):,} VNĐ
 Giá bán ({Tt}% lời): {round(gia_ban):,} VNĐ
-Tổng lời: {round(gia_ban-tong_chi_phi):,} VNĐ
+Tổng lời: {round(gia_ban - tong_chi_phi):,} VNĐ
 """
-    text_kq.delete("1.0", tk.END)
-    text_kq.insert(tk.END, ket_qua)
+    text_kq.configure(state="normal")
+    text_kq.delete("1.0", "end")
+    text_kq.insert("end", ket_qua)
+    text_kq.configure(state="disabled")
 
-# === Giao diện ===
-root = tk.Tk()
-root.title("Tính tiền in 3D")
-root.geometry("420x460")
-root.resizable(False, False)
+# === GUI ===
+app = ctk.CTk()
+app.title("Tính tiền in 3D")
+app.geometry("460x560")
+app.resizable(False, False)
 
-tk.Label(root, text="Chọn loại nhựa:").pack(pady=5)
-combo_loai = ttk.Combobox(root, values=["PLA", "PLA+", "ABS", "PETG"], state="readonly")
+ctk.CTkLabel(app, text="Chọn loại nhựa:").pack(pady=(10, 0))
+combo_loai = ctk.CTkComboBox(app, values=["PLA", "PLA+", "ABS", "PETG"])
 combo_loai.set("PLA")
-combo_loai.pack()
+combo_loai.pack(pady=5)
 
-tk.Label(root, text="Khối lượng nhựa cần in (g):").pack(pady=5)
-entry_khoi_luong = tk.Entry(root)
-entry_khoi_luong.pack()
+ctk.CTkLabel(app, text="Khối lượng nhựa cần in (g):").pack()
+entry_khoi_luong = ctk.CTkEntry(app, placeholder_text="VD: 150")
+entry_khoi_luong.pack(pady=5)
 
-tk.Label(root, text="Thời gian in:").pack(pady=5)
-frame_time = tk.Frame(root)
-frame_time.pack()
+ctk.CTkLabel(app, text="Thời gian in:").pack()
+frame_time = ctk.CTkFrame(app)
+frame_time.pack(pady=5)
 
-tk.Label(frame_time, text="Giờ:").pack(side=tk.LEFT, padx=5)
-entry_gio = tk.Entry(frame_time, width=5)
-entry_gio.pack(side=tk.LEFT)
+entry_gio = ctk.CTkEntry(frame_time, width=60, placeholder_text="Giờ")
+entry_gio.pack(side="left", padx=5)
+entry_phut = ctk.CTkEntry(frame_time, width=60, placeholder_text="Phút")
+entry_phut.pack(side="left", padx=5)
 
-tk.Label(frame_time, text="Phút:").pack(side=tk.LEFT, padx=5)
-entry_phut = tk.Entry(frame_time, width=5)
-entry_phut.pack(side=tk.LEFT)
+ctk.CTkButton(app, text="Tính tiền", command=tinh_tien_in).pack(pady=15)
 
-tk.Button(root, text="Tính tiền", command=tinh_tien_in, bg="#4CAF50", fg="white").pack(pady=10)
-
-text_kq = tk.Text(root, height=12, width=50)
+text_kq = ctk.CTkTextbox(app, height=200, width=420, font=("Consolas", 11))
 text_kq.pack(pady=5)
+text_kq.configure(state="disabled")
 
-root.mainloop()
+app.mainloop()

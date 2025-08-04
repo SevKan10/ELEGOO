@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+import json
 
 def tinh_tien_in():
     try:
@@ -12,42 +13,63 @@ def tinh_tien_in():
         messagebox.showerror("Lỗi nhập liệu", "Vui lòng nhập đúng định dạng số.")
         return
 
-    # Giá nhựa theo gam
-    gia_nhua = {
-        "PLA": 210_000 / 1000,
-        "PLA+": 260_000 / 1000,
-        "ABS": 160_000 / 1000,
-        "PETG": 160_000 / 1000
-    }
+    # === Đọc cấu hình từ file JSON ===
+    try:
+        with open("config.json", "r", encoding="utf-8") as f:
+            config = json.load(f)
+    except FileNotFoundError:
+        messagebox.showerror("Lỗi", "Không tìm thấy file 'config.json'")
+        return
+    except json.JSONDecodeError:
+        messagebox.showerror("Lỗi", "File 'config.json' bị lỗi định dạng.")
+        return
 
-    # Công suất máy và tiền điện
-    cong_suat_kw = 310 / 1000
+    loi_nhuan_phan_tram = config.get("loi_nhuan", 25)
+    cong_suat_watt = config.get("cong_suat_watt", 310)
+    tien_cong_moi_gio = config.get("tien_cong_moi_gio", 10000)
+    hao_mon_moi_gio = config.get("hao_mon_moi_gio", 5000)
+    gia_nhua_raw = config.get("gia_nhua", {})
+    gia_dien = config.get("gia_dien", {})
+
+    # Chuyển giá nhựa từ VND/kg sang VND/g
+    gia_nhua = {k: v / 1000 for k, v in gia_nhua_raw.items()}
+
+    # Kiểm tra loại nhựa có tồn tại không
+    if loai_nhua not in gia_nhua:
+        messagebox.showerror("Lỗi", f"Không tìm thấy giá cho loại nhựa '{loai_nhua}' trong config.")
+        return
+
+    # === Tính tiền điện theo bậc ===
+    def tinh_tien_dien(kwh):
+        bac1 = gia_dien.get("bac1", 1984)
+        bac2 = gia_dien.get("bac2", 2050)
+        bac3 = gia_dien.get("bac3", 2380)
+        bac4 = gia_dien.get("bac4", 2998)
+
+        if kwh <= 50:
+            return kwh * bac1
+        elif kwh <= 100:
+            return 50 * bac1 + (kwh - 50) * bac2
+        elif kwh <= 200:
+            return 50 * bac1 + 50 * bac2 + (kwh - 100) * bac3
+        else:
+            return 50 * bac1 + 50 * bac2 + 100 * bac3 + (kwh - 200) * bac4
+
+    cong_suat_kw = cong_suat_watt / 1000
     dien_tieu_thu = cong_suat_kw * thoi_gian
 
-    def tinh_tien_dien(kwh):
-        tien = 0
-        if kwh <= 50:
-            tien = kwh * 1984
-        elif kwh <= 100:
-            tien = 50 * 1984 + (kwh - 50) * 2050
-        elif kwh <= 200:
-            tien = 50 * 1984 + 50 * 2050 + (kwh - 100) * 2380
-        else:
-            tien = 50 * 1984 + 50 * 2050 + 100 * 2380 + (kwh - 200) * 2998
-        return tien
-    T = 1.25
-    Tt = T * 100 - 100
     tien_nhua = gia_nhua[loai_nhua] * khoi_luong
     tien_dien = tinh_tien_dien(dien_tieu_thu)
-    hao_mon_moi_gio = 5000
-    tien_cong_moi_gio = 10000
     tien_hao_mon = thoi_gian * hao_mon_moi_gio
     tien_cong = thoi_gian * tien_cong_moi_gio
 
     tong_chi_phi = tien_nhua + tien_dien + tien_hao_mon + tien_cong
-    gia_ban = tong_chi_phi * T  # lời **%
 
-    ket_qua = f"""\
+    T = 1 + loi_nhuan_phan_tram / 100
+    Tt = loi_nhuan_phan_tram
+    gia_ban = tong_chi_phi * T
+
+    ket_qua = f"""\n\
 Thời gian in: {gio} giờ {phut} phút
 Tiền nhựa: {round(tien_nhua):,} VNĐ
 Tiền điện: {round(tien_dien):,} VNĐ
@@ -55,11 +77,11 @@ Hao mòn máy: {round(tien_hao_mon):,} VNĐ
 Tiền công: {round(tien_cong):,} VNĐ
 ----------------------------
 Tổng chi phí: {round(tong_chi_phi):,} VNĐ
-Giá đề xuất ({Tt}% lời): {round(gia_ban):,} VNĐ
+Giá bán ({Tt}% lời): {round(gia_ban):,} VNĐ
+Tổng lời: {round(gia_ban-tong_chi_phi):,} VNĐ
 """
     text_kq.delete("1.0", tk.END)
     text_kq.insert(tk.END, ket_qua)
-
 
 # === Giao diện ===
 root = tk.Tk()

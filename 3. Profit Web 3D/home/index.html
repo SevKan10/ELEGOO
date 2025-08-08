@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tính tiền in 3D</title>
+  <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Tính tiền in 3D</h1>
+    <form id="calcForm">
+      <div class="row">
+        <label>Loại nhựa:</label>
+        <input type="text" name="loai_nhua" value="PLA" required />
+      </div>
+      <div class="row">
+        <label>Giá nhựa (VND/kg):</label>
+        <input type="number" name="gia_nhua" value="210000" required />
+      </div>
+      <div class="row">
+        <label>Khối lượng (g):</label>
+        <input type="number" name="khoi_luong" value="100" required />
+      </div>
+      <div class="row">
+        <label>Thời gian in:</label>
+        <input type="number" name="gio" value="1" min="0" /> giờ
+        <input type="number" name="phut" value="30" min="0" max="59" /> phút
+      </div>
+      <div class="row">
+        <label>Công suất máy (W):</label>
+        <input type="number" name="cong_suat_watt" value="310" required />
+      </div>
+      <div class="row">
+        <label>Tiền công mỗi giờ (VND):</label>
+        <input type="number" name="tien_cong_moi_gio" value="10000" required />
+      </div>
+      <div class="row">
+        <label>Hao mòn mỗi giờ (VND):</label>
+        <input type="number" name="hao_mon_moi_gio" value="5000" required />
+      </div>
+      <div class="row">
+        <label>% lợi nhuận mong muốn:</label>
+        <input type="number" name="loi_nhuan" value="25" required />
+      </div>
+      <fieldset>
+        <legend>Giá điện bậc thang (VND/kWh):</legend>
+        <div class="row"><label>Bậc 1:</label><input type="number" name="gia_dien_bac1" value="1984" required /></div>
+        <div class="row"><label>Bậc 2:</label><input type="number" name="gia_dien_bac2" value="2050" required /></div>
+        <div class="row"><label>Bậc 3:</label><input type="number" name="gia_dien_bac3" value="2380" required /></div>
+        <div class="row"><label>Bậc 4:</label><input type="number" name="gia_dien_bac4" value="2998" required /></div>
+      </fieldset>
+      <button type="submit">Tính ngay</button>
+    </form>
+
+    <div id="ketQua" class="ketqua"></div>
+  </div>
+  <script src="index.js"></script>
+</body>
+</html>
